@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>مخطط التغذية | Nutrition Planner</title>
+    <style>
+      :root {
+        font-family: Tahoma, Arial, sans-serif;
+        color: #17362e;
+        background: #f5f8f5;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header {
+        background: #123e35;
+        color: white;
+        padding: 25px max(24px, calc((100vw - 1050px) / 2));
+      }
+      header h1 {
+        margin: 0;
+        font-size: 27px;
+      }
+      header p {
+        opacity: 0.85;
+        margin: 9px 0 0;
+      }
+      .wrap {
+        max-width: 1050px;
+        margin: 30px auto;
+        padding: 0 20px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 1.3fr 0.8fr;
+        gap: 20px;
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid #dce8e1;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 8px 25px #1b51330a;
+        margin-bottom: 20px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 20px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 22px 0 12px;
+      }
+      .eyebrow {
+        color: #327a5e;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      label {
+        font-size: 13px;
+        font-weight: bold;
+        display: block;
+        margin: 0 0 7px;
+      }
+      input,
+      select,
+      textarea {
+        font: inherit;
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbdcd2;
+        border-radius: 9px;
+        background: white;
+        color: #17362e;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 65px;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .note {
+        background: #eff6f0;
+        border-radius: 11px;
+        padding: 13px;
+        font-size: 13px;
+        line-height: 1.9;
+      }
+      .warning {
+        background: #fff6e8;
+        color: #69481a;
+        border: 1px solid #f0ddb9;
+      }
+      .choices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .choice {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid #dce8e1;
+        padding: 10px;
+        border-radius: 9px;
+        font-weight: normal;
+        cursor: pointer;
+      }
+      .choice input {
+        width: auto;
+        accent-color: #21875d;
+      }
+      .btn {
+        border: 0;
+        background: #16744f;
+        color: white;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 12px;
+      }
+      .btn.secondary {
+        background: #e5f2ea;
+        color: #17523c;
+      }
+      .metric {
+        font-size: 34px;
+        font-weight: bold;
+        margin: 4px 0;
+      }
+      .small {
+        font-size: 12px;
+        color: #587267;
+        line-height: 1.8;
+      }
+      .week-tabs {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin: 14px 0;
+      }
+      .day-tab {
+        border: 1px solid #cbdcd2;
+        border-radius: 9px;
+        background: white;
+        padding: 9px 12px;
+        cursor: pointer;
+        font: inherit;
+        color: #17362e;
+      }
+      .day-tab.active {
+        background: #16744f;
+        color: white;
+        border-color: #16744f;
+      }
+      .meal-card {
+        border: 1px solid #dce8e1;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 12px 0;
+        background: #fbfdfb;
+      }
+      .meal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .mini-btn {
+        border: 1px solid #dce8e1;
+        border-radius: 8px;
+        background: white;
+        padding: 7px 11px;
+        font: inherit;
+        cursor: pointer;
+        color: #17523c;
+      }
+      .mini-btn.danger {
+        color: #a43e3e;
+      }
+      .empty {
+        padding: 22px;
+        text-align: center;
+        border: 1px dashed #b7cdbf;
+        border-radius: 12px;
+        color: #587267;
+      }
+      .report {
+        display: none;
+      }
+      .report h1 {
+        color: #123e35;
+      }
+      .report table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12px 0 22px;
+      }
+      .report td,
+      .report th {
+        border: 1px solid #d7e2d9;
+        padding: 10px;
+        text-align: right;
+        vertical-align: top;
+      }
+      .report th {
+        background: #e9f3ed;
+      }
+      .report li {
+        margin-bottom: 8px;
+      }
+      .tag {
+        font-size: 11px;
+        background: #e7f1ec;
+        padding: 4px 8px;
+        border-radius: 7px;
+        color: #245940;
+      }
+      .foot {
+        margin-top: 25px;
+        font-size: 12px;
+        color: #60776b;
+      }
+      #preview {
+        margin-top: 20px;
+      }
+      a {
+        color: #207553;
+      }
+      @media (max-width: 760px) {
+        .layout,
+        .fields {
+          grid-template-columns: 1fr;
+        }
+        .choices {
+          grid-template-columns: 1fr;
+        }
+        header {
+          padding: 22px;
+        }
+      }
+      @media print {
+        @page {
+          size: A4;
+          margin: 16mm;
+        }
+        body {
+          background: white;
+          color: #111;
+        }
+        header,
+        .wrap > .layout,
+        .no-print {
+          display: none !important;
+        }
+        .wrap {
+          margin: 0;
+          max-width: none;
+          padding: 0;
+        }
+        .report {
+          display: block !important;
+        }
+        .panel {
+          box-shadow: none;
+          border: 0;
+          padding: 0;
+        }
+        .report h1 {
+          font-size: 23px;
+        }
+        .report h2 {
+          break-after: avoid;
+        }
+        .report table {
+          break-inside: avoid;
+        }
+        footer {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        مخطط التغذية
+        <span style="font-size: 14px; font-weight: normal"
+          >Nutrition Planner</span
+        >
+      </h1>
+      <p>
+        نظّم معلوماتك وتفضيلاتك الغذائية، ثم صدّر تقريرًا عربيًا جاهزًا للطباعة.
+      </p>
+    </header>
+    <main class="wrap">
+      <div class="layout">
+        <section>
+          <div class="panel">
+            <div class="eyebrow">الخطوة ١ من ٣</div>
+            <h2>البيانات الشخصية</h2>
+            <div class="fields">
+              <div class="field">
+                <label for="name">الاسم</label
+                ><input id="name" maxlength="100" placeholder="الاسم الكامل" />
+              </div>
+              <div class="field">
+                <label for="age">العمر (سنوات) — اختياري</label
+                ><input id="age" type="number" min="1" max="120" />
+              </div>
+              <div class="field">
+                <label for="height">الطول (سم)</label
+                ><input
+                  id="height"
+                  type="number"
+                  min="50"
+                  max="250"
+                  step="0.1"
+                  placeholder="170"
+                />
+              </div>
+              <div class="field">
+                <label for="weight">الوزن (كجم)</label
+                ><input
+                  id="weight"
+                  type="number"
+                  min="10"
+                  max="500"
+                  step="0.1"
+                  placeholder="75"
+                />
+              </div>
+              <div class="field">
+                <label for="goal">الهدف الشخصي</label
+                ><select id="goal">
+                  <option value="غير محدد">غير محدد</option>
+                  <option>إدارة الوزن</option>
+                  <option>الحفاظ على الوزن</option>
+                  <option>بناء العضلات</option>
+                  <option>تحسين العادات الغذائية</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="date">تاريخ التقرير</label
+                ><input id="date" type="date" />
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">الخطوة ٢ من ٣</div>
+            <h2>الأطعمة المفضلة</h2>
+            <p class="small">
+              اختر الأطعمة التي تفضّلها. هذه الاختيارات ليست حصصًا غذائية ولا
+              وصفة علاجية.
+            </p>
+            <div id="groups"></div>
+            <h3>حساسية أو قيود غذائية — اختياري</h3>
+            <textarea
+              id="restrictions"
+              placeholder="اكتب أي أطعمة تريد تجنبها أو حساسيات معروفة"
+            ></textarea>
+            <h3>ملاحظات — اختياري</h3>
+            <textarea id="notes" placeholder="ملاحظاتك الخاصة"></textarea>
+          </div>
+          <div class="panel" id="weeklyPlanner">
+            <div class="eyebrow">مخطط الوجبات الأسبوعي</div>
+            <h2>الوجبات اليومية</h2>
+            <p class="small">
+              اختر اليوم، ثم أضف الوجبات مع الاسم والتاريخ والملاحظات. يمكنك
+              إضافة أي عدد من الوجبات لكل يوم. جميع المدخلات يحددها المستخدم.
+            </p>
+            <div
+              class="week-tabs"
+              id="weekTabs"
+              role="group"
+              aria-label="أيام الأسبوع"
+            ></div>
+            <div class="meal-head">
+              <h3 id="selectedDayTitle">وجبات اليوم</h3>
+              <button class="mini-btn" type="button" id="addMeal">
+                + إضافة وجبة
+              </button>
+            </div>
+            <div id="dayMeals"></div>
+            <p class="small" id="mealCount"></p>
+          </div>
+        </section>
+        <aside>
+          <div class="panel">
+            <div class="eyebrow">الخطوة ٣ من ٣</div>
+            <h2>معاينة التقرير</h2>
+            <div class="small">
+              مؤشر كتلة الجسم (BMI) — للبالغين، مؤشر فحص أولي وليس تشخيصًا
+            </div>
+            <div class="metric" id="bmi">—</div>
+            <div class="small" id="bmiText">أدخل الطول والوزن لعرض المؤشر.</div>
+            <hr
+              style="border: 0; border-top: 1px solid #e3eae5; margin: 22px 0"
+            />
+            <div class="note warning">
+              المصدر يضم ادعاءات غير متحقق منها طبيًا، ولا يحدد سعرات أو حصصًا
+              أو وجبات يومية. التقرير لا ينشئ خطة علاجية أو أهداف نزول وزن
+              تلقائية.
+            </div>
+            <button class="btn" id="generate">إنشاء معاينة التقرير</button
+            ><button class="btn secondary" id="print" disabled>
+              حفظ التقرير PDF / طباعة
+            </button>
+            <p class="small">
+              تُعالج بياناتك داخل المتصفح فقط، ولا تُرسل إلى خادم. استخدم «حفظ
+              كملف PDF» من نافذة الطباعة.
+            </p>
+          </div>
+          <div class="panel">
+            <h2>مصدر الإرشادات</h2>
+            <p class="small">
+              خطه التغذية.pdf — صفحتان. البدائل الغذائية المذكورة من المصدر، دون
+              افتراض تكافؤ الحصص أو المغذيات.
+            </p>
+          </div>
+        </aside>
+      </div>
+      <section class="report panel" id="preview" aria-live="polite"></section>
+    </main>
+    <script>
+      const groups = [
+        {
+          name: "النشويات",
+          items: ["الأرز", "المكرونة"],
+          rule: "يمكن تبديل حصص الأرز بالمكرونة والعكس.",
+        },
+        {
+          name: "الخبز",
+          items: ["الخبز الأسمر", "التوست الأسمر", "خبز الشعير", "خبز الدخن"],
+          rule: "يُفضّل أن يكون الخبز خفيفًا ولا يحتوي على لبّ كثير، بحسب المصدر.",
+        },
+        {
+          name: "الفواكه",
+          items: ["التفاح", "البرتقال", "الكيوي", "الكمثرى", "الخوخ", "الموز"],
+          rule: "يذكر المصدر إمكانية التبديل بينها مع عدم اختيار الموز دائمًا.",
+        },
+        {
+          name: "مصادر البروتين",
+          items: ["السمك", "التونة", "الدجاج", "البيض", "العدس"],
+          rule: "يذكر المصدر إمكانية التبديل بينها، دون تحديد حصص مكافئة.",
+        },
+        {
+          name: "الألبان",
+          items: ["الحليب خالي الدسم", "الزبادي خالي الدسم"],
+          rule: "يمكن التبديل بينهما وفق المصدر.",
+        },
+      ];
+      const statements = [
+        [
+          "ص ١",
+          "يذكر المصدر استخدام مُحلّي تروبيكانا لمرضى السكري ويفضّله على غيره.",
+          "ادعاء غير متحقق منه؛ لا يُعد توصية طبية.",
+        ],
+        [
+          "ص ١",
+          "يعرض المصدر نطاق مؤشر كتلة الجسم 18.5–24.9 بوصفه النطاق الطبيعي.",
+          "هذا نطاق تصنيفي شائع للبالغين، ولا يكفي وحده لتقييم الصحة.",
+        ],
+        [
+          "ص ١",
+          "يقترح المصدر مثالًا لخفض مؤشر كتلة الجسم تدريجيًا من 35 إلى 30 ثم 27 ثم 25، مع ذكر أسبوعين في المثال.",
+          "مثال من المصدر غير صالح كجدول علاجي فردي دون تقييم متخصص.",
+        ],
+        [
+          "ص ١",
+          "يدّعي المصدر أن التدرّج يمنع توقف النزول ويحافظ على العضلات والماء.",
+          "ادعاء غير متحقق منه في الوثيقة.",
+        ],
+        [
+          "ص ١",
+          "يذكر المصدر أن الوجبات تكون أكثر في أول أسبوعين ثم تنخفض تدريجيًا.",
+          "لا توجد في الوثيقة كميات أو جداول وجبات قابلة للتنفيذ.",
+        ],
+        [
+          "ص ١",
+          "يدّعي المصدر أن كيلوغرام الدهون يساوي كيلوغرامين وربعًا من العضلات.",
+          "مقارنة غير مثبتة ولا تُستخدم للحسابات.",
+        ],
+        [
+          "ص ١",
+          "يذكر المصدر فقدان 1–3 كجم في أول أسبوعين ثم 0.5–1 كجم أسبوعيًا مع اختلاف النتائج.",
+          "أرقام واردة في المصدر وليست توقعًا شخصيًا أو ضمانًا.",
+        ],
+        [
+          "ص ٢",
+          "يحذّر المصدر من فقدان وزن كبير سريعًا ويربطه بمضاعفات مثل فقد العضلات والخمول ومشكلات الشعر والبشرة.",
+          "تحذير عام؛ درجة الخطر تعتمد على الظروف الفردية.",
+        ],
+        [
+          "ص ٢",
+          "يشدّد المصدر على أن النتائج تحتاج إلى وقت وجهد وأن شكل الجسم والطاقة والنشاط مهمّة.",
+          "توجيه عام من المصدر.",
+        ],
+        [
+          "ص ٢",
+          "يذكر المصدر أن بناء العضلات يحتاج إلى كمية بروتين محسوبة مع الرياضة والالتزام.",
+          "لا توجد كمية بروتين محددة في الوثيقة.",
+        ],
+        [
+          "ص ٢",
+          "يشجع المصدر على الثقة بالطبيب والتفاؤل، ويربط السلبية بأداء الجسم.",
+          "عبارة تحفيزية؛ ليست قاعدة فسيولوجية مثبتة.",
+        ],
+      ];
+      const weekDays = [
+        "السبت",
+        "الأحد",
+        "الإثنين",
+        "الثلاثاء",
+        "الأربعاء",
+        "الخميس",
+        "الجمعة",
+      ];
+      let activeDay = 0;
+      let nextMealId = 1;
+      const weeklyMeals = weekDays.map(() => []);
+      function renderWeekTabs() {
+        document.getElementById("weekTabs").innerHTML = weekDays
+          .map(
+            (day, i) =>
+              `<button type="button" class="day-tab ${i === activeDay ? "active" : ""}" data-day="${i}" aria-pressed="${i === activeDay}">${day} (${weeklyMeals[i].length})</button>`,
+          )
+          .join("");
+      }
+      function renderDayMeals() {
+        renderWeekTabs();
+        document.getElementById("selectedDayTitle").textContent =
+          "وجبات يوم " + weekDays[activeDay];
+        document.getElementById("dayMeals").innerHTML = weeklyMeals[activeDay]
+          .length
+          ? weeklyMeals[activeDay]
+              .map(
+                (m, i) =>
+                  `<div class="meal-card" data-meal-id="${m.id}"><div class="meal-head"><strong>الوجبة ${i + 1}</strong><button type="button" class="mini-btn danger" data-remove="${m.id}">حذف</button></div><div class="fields" style="margin-top:12px"><div class="field"><label>اسم الوجبة</label><input data-prop="name" maxlength="120" placeholder="مثال: الإفطار" value="${escapeHtml(m.name)}"></div><div class="field"><label>تاريخ الوجبة</label><input data-prop="date" type="date" value="${escapeHtml(m.date)}"></div></div><div class="field"><label>ملاحظات الوجبة</label><textarea data-prop="note" maxlength="1000" placeholder="أدخل ملاحظات أو تفاصيل الوجبة">${escapeHtml(m.note)}</textarea></div></div>`,
+              )
+              .join("")
+          : '<div class="empty">لا توجد وجبات لهذا اليوم بعد. اضغط «إضافة وجبة» للبدء.</div>';
+        document.getElementById("mealCount").textContent =
+          "إجمالي الوجبات في الأسبوع: " +
+          weeklyMeals.reduce((n, day) => n + day.length, 0);
+      }
+      document.getElementById("weekTabs").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-day]");
+        if (!b) return;
+        activeDay = Number(b.dataset.day);
+        renderDayMeals();
+      });
+      document.getElementById("addMeal").addEventListener("click", () => {
+        weeklyMeals[activeDay].push({
+          id: nextMealId++,
+          name: "",
+          date: "",
+          note: "",
+        });
+        renderDayMeals();
+      });
+      document.getElementById("dayMeals").addEventListener("input", (e) => {
+        const field = e.target.dataset.prop;
+        if (!["name", "date", "note"].includes(field)) return;
+        const card = e.target.closest("[data-meal-id]");
+        const meal = weeklyMeals[activeDay].find(
+          (m) => m.id === Number(card.dataset.mealId),
+        );
+        if (meal) meal[field] = e.target.value;
+      });
+      document.getElementById("dayMeals").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-remove]");
+        if (!b) return;
+        weeklyMeals[activeDay] = weeklyMeals[activeDay].filter(
+          (m) => m.id !== Number(b.dataset.remove),
+        );
+        renderDayMeals();
+      });
+      const $ = (id) => document.getElementById(id);
+      const escapeHtml = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      renderDayMeals();
+      $("date").value = new Date().toLocaleDateString("en-CA");
+      $("groups").innerHTML = groups
+        .map(
+          (g, i) =>
+            `<h3>${g.name}</h3><div class="choices">${g.items.map((f, j) => `<label class="choice"><input type="checkbox" data-group="${i}" value="${escapeHtml(f)}">${f}</label>`).join("")}</div><p class="small">${g.rule}</p>`,
+        )
+        .join("");
+      function bmi() {
+        const h = Number($("height").value),
+          w = Number($("weight").value);
+        return h >= 50 && h <= 250 && w >= 10 && w <= 500
+          ? w / (h / 100) ** 2
+          : null;
+      }
+      function update() {
+        const v = bmi();
+        $("bmi").textContent = v ? v.toFixed(1) : "—";
+        $("bmiText").textContent = v
+          ? "قيمة حسابية تقريبية، لا تمثل تشخيصًا أو توصية علاجية."
+          : "أدخل طولًا ووزنًا صالحين لعرض المؤشر.";
+      }
+      ["height", "weight"].forEach((id) =>
+        $(id).addEventListener("input", update),
+      );
+      $("generate").onclick = () => {
+        const chosen = groups.map((g, i) => ({
+          g,
+          foods: [
+            ...document.querySelectorAll(`input[data-group="${i}"]:checked`),
+          ].map((x) => x.value),
+        }));
+        const val = (id) => escapeHtml($(id).value.trim() || "غير محدد");
+        $("preview").innerHTML =
+          `<h1>تقرير المعلومات والتفضيلات الغذائية</h1><p class="small">تقرير معلوماتي مبني على بيانات المستخدم وإرشادات «خطه التغذية.pdf» — ليس وصفة غذائية شخصية.</p><h2>١. البيانات الشخصية</h2><table><tr><th>الاسم</th><td>${val("name")}</td><th>تاريخ التقرير</th><td>${val("date")}</td></tr><tr><th>العمر</th><td>${val("age")}</td><th>الهدف</th><td>${val("goal")}</td></tr><tr><th>الطول</th><td>${$("height").value ? val("height") + " سم" : "غير محدد"}</td><th>الوزن</th><td>${$("weight").value ? val("weight") + " كجم" : "غير محدد"}</td></tr><tr><th>BMI</th><td colspan="3">${bmi()?.toFixed(1) ?? "غير متاح"} — مؤشر فحص أولي، وليس تشخيصًا</td></tr></table><h2>٢. اختيارات الأطعمة وبدائلها</h2><table><tr><th>المجموعة</th><th>اختيارات المستخدم</th><th>إرشاد المصدر</th></tr>${chosen.map(({ g, foods }) => `<tr><td>${g.name}</td><td>${foods.length ? foods.map(escapeHtml).join("، ") : "لم يتم الاختيار"}</td><td>${g.rule}</td></tr>`).join("")}</table><h2>٣. القيود والملاحظات</h2><p><strong>الحساسية والقيود:</strong> ${val("restrictions")}</p><p><strong>ملاحظات المستخدم:</strong> ${val("notes")}</p><h2>٤. جدول الوجبات الأسبوعي</h2><table><tr><th>اليوم</th><th>اسم الوجبة</th><th>التاريخ</th><th>ملاحظات</th></tr>${weekDays.map((day, i) => (weeklyMeals[i].length ? weeklyMeals[i].map((m, j) => `<tr>${j === 0 ? `<td rowspan="${weeklyMeals[i].length}">${day}</td>` : ""}<td>${escapeHtml(m.name || "غير محدد")}</td><td>${escapeHtml(m.date || "غير محدد")}</td><td>${escapeHtml(m.note || "—").replace(/\n/g, "<br>")}</td></tr>`).join("") : `<tr><td>${day}</td><td colspan="3">لم تتم إضافة وجبات</td></tr>`)).join("")}</table><p class="small">الوجبات المذكورة أدخلها المستخدم وليست وصفات أو حصصًا غذائية موصى بها من المصدر.</p><h2>٥. بقية معلومات المصدر وتصنيفها</h2><table><tr><th>الصفحة</th><th>المعلومة المنقولة بالمعنى</th><th>حالة التحقق</th></tr>${statements.map((s) => `<tr><td>${s[0]}</td><td>${s[1]}</td><td>${s[2]}</td></tr>`).join("")}</table><p class="note warning">تنبيه: لا يتضمن المستند كميات الطعام أو السعرات أو مواعيد الوجبات أو بيانات سريرية كافية لإنشاء برنامج تغذية شخصي. ينبغي مراجعة أي برنامج علاجي مع مختص مؤهل، خاصةً عند وجود أمراض أو حساسية غذائية.</p><p class="foot">المصدر: خطه التغذية.pdf، الصفحتان ١–٢. هذا التقرير يحتفظ بالمصدر بوصفه مرجعًا للنصوص لا دليلًا على صحة كل ادعاء.</p>`;
+        $("preview").style.display = "block";
+        $("print").disabled = false;
+        $("preview").scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      $("print").onclick = () => window.print();
+    </script>
+  </body>
+</html>
